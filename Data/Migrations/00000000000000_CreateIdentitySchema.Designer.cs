@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using stack_overload.Data;
 using System;
+using stack_overload.Data;
 
 namespace stack_overload.Data.Migrations
 {
