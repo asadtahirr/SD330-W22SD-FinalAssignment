@@ -53,7 +53,7 @@ namespace stack_overload.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
-            Question question = await DbContext.Questions.Include(q => q.Tags).FirstOrDefaultAsync(q => q.Id == id);
+            Question question = await DbContext.Questions.Include(q => q.Tags).Include(q => q.Answers).FirstOrDefaultAsync(q => q.Id == id);
 
             if (question == null)
                 return Redirect("/questions/new");
@@ -63,7 +63,8 @@ namespace stack_overload.Controllers
                 Id = question.Id,
                 Title = question.Title,
                 Body = question.Body,
-                Tags = question.Tags
+                Tags = question.Tags,
+                Answers = question.Answers
             };
 
             return View(viewModel);

@@ -10,3 +10,9 @@
 @foreach (Tag tag in Model.Tags) {
     <span>@tag.Name</span>
 }
+
+<a class="nav-link text-dark" asp-area="" asp-controller="Answers" asp-action="New" asp-route-id="@Model.Id">Answer this question</a>
+
+@foreach (Answer answer in Model.Answers) {
+    <p>@answer.Body</p>
+}

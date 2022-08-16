@@ -1,0 +1,14 @@
+﻿@using stack_overload.Models.ViewModels
+@model NewAnswerViewModel
+
+<div>
+    <h1>Answer question</h1>
+
+    <form asp-controller="answers"  asp-action="new" asp-route-id="@Model?.Id" method="post">
+        <div>
+            <input type="text" name="body">
+        </div>
+
+        <button>Submit</button>
+    </form>
+</div>
