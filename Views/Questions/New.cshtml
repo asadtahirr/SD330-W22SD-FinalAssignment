@@ -1,0 +1,22 @@
+﻿<div>
+    <h1 class="text-center">Ask a Question</h1>
+
+    <form asp-controller="questions"  asp-action="new" method="post">
+        <div>
+            <label for="title">Title (required):</label><br>
+            <input type="text" name="title"><br>
+        </div>
+
+        <div>
+            <label for="body">Body (required):</label><br>
+            <input type="text" name="body">
+        </div>
+
+        <div>
+            <label for="tags">Tags (comma separated):</label><br>
+            <input type="text" name="tags">
+        </div>
+
+        <button>Submit</button>
+    </form>
+</div>

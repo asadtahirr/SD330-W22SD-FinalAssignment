@@ -1,0 +1,12 @@
+﻿@using stack_overload.Models.ViewModels
+@using stack_overload.Models
+@model QuestionDetailsViewModel
+
+<h1>Question: @Model.Title</h1>
+
+<p>@Model.Body</p>
+
+
+@foreach (Tag tag in Model.Tags) {
+    <span>@tag.Name</span>
+}
