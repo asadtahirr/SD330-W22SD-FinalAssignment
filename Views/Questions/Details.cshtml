@@ -4,7 +4,7 @@
 
 <h1>@Model.Title</h1>
 
-<p>@Model.Body</p>
+<p>@Html.Raw(Model.Body)</p>
 
 @foreach (Tag tag in Model.Tags)
 {
