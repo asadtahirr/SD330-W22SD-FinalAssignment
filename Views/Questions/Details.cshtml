@@ -55,6 +55,24 @@
             <p>@comment.Body - @comment.CreatedBy.UserName</p>
         }
 
+        <div>
+            <span>
+                <form class="d-inline" asp-controller="answers" asp-action="vote" asp-route-id="@answer.Id">
+                    <input hidden value="upvote" name="action" />
+                    <input class="d-inline" type="submit" value="Upvote" />
+                </form>
+            </span>
+
+            <span>@answer.Votes</span>
+
+            <span>
+                <form class="d-inline" asp-controller="answers" asp-action="vote" asp-route-id="@answer.Id">
+                    <input hidden value="downvote" name="action" />
+                    <input class="d-inline" type="submit" value="Downvote" />
+                </form>
+            </span>
+        </div>
+
         <p><a asp-controller="comments" asp-action="new" asp-route-answerId="@answer.Id">Write a comment</a></p>
     </div>
 }

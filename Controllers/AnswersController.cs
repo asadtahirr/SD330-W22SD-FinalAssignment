@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using stack_overload.Data;
 using stack_overload.Models;
 using stack_overload.Models.InputModels;
@@ -42,6 +43,77 @@ namespace stack_overload.Controllers
             await DbContext.SaveChangesAsync();
 
             return Redirect($"/questions/details/{id}");
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Vote(
+            [FromRoute] string id, [FromForm] VoteInputModel inputModel
+        )
+        {
+            Answer answer = await DbContext
+                                        .Answers
+                                        .Include(a => a.Upvoters)
+                                        .Include(a => a.Downvoters)
+                                        .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (answer == null)
+            {
+                return Redirect("~/questions/index");
+            }
+
+            User currentUser = await UserManager.GetUserAsync(User);
+
+            if (answer.CreatedById == currentUser.Id)
+            {
+                return Redirect($"~/questions/details/{answer.QuestionId}");
+            }
+            else
+            {
+                if (inputModel.Action == "upvote")
+                {
+                    if (answer.Downvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        answer.Votes += 1;
+                        answer.Downvoters.Remove(currentUser);
+                    }
+                    else if (!answer.Upvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        answer.Votes += 1;
+                        answer.Upvoters.Add(currentUser);
+                    }
+                    else
+                    {
+                        return Redirect($"~/questions/details/{answer.QuestionId}");
+                    }
+                }
+                else if (inputModel.Action == "downvote")
+                {
+                    if (answer.Upvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        answer.Votes -= 1;
+                        answer.Upvoters.Remove(currentUser);
+                    }
+                    else if (!answer.Downvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        answer.Votes -= 1;
+                        answer.Downvoters.Add(currentUser);
+                    }
+                    else
+                    {
+                        return Redirect($"~/questions/details/{answer.QuestionId}");
+                    }
+                }
+                else
+                {
+                    return Redirect($"~/questions/details/{answer.QuestionId}");
+                }
+
+                answer.UpdatedAt = DateTime.Now;
+
+                await DbContext.SaveChangesAsync();
+
+                return Redirect($"~/questions/details/{answer.QuestionId}");
+            }
         }
     }
 }

@@ -161,21 +161,43 @@ namespace stack_overload.Controllers
             }
             else
             {
-                if (inputModel.Action == "upvote" && (question.Downvoters.Any(v => v.Id == currentUser.Id) || !question.Upvoters.Any(v => v.Id == currentUser.Id)))
+                if (inputModel.Action == "upvote")
                 {
-                    question.Votes += 1;
-                    question.Upvoters.Add(currentUser);
-                    question.Downvoters.Remove(currentUser);
+                    if (question.Downvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        question.Votes += 1;
+                        question.Downvoters.Remove(currentUser);
+                    }
+                    else if (!question.Upvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        question.Votes += 1;
+                        question.Upvoters.Add(currentUser);
+                    }
+                    else
+                    {
+                        return Redirect($"~/questions/details/{id}");
+                    }
                 }
-                else if (inputModel.Action == "downvote" && (question.Upvoters.Any(v => v.Id == currentUser.Id) || !question.Downvoters.Any(v => v.Id == currentUser.Id)))
+                else if (inputModel.Action == "downvote")
                 {
-                    question.Votes -= 1;
-                    question.Downvoters.Add(currentUser);
-                    question.Upvoters.Remove(currentUser);
+                    if (question.Upvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        question.Votes -= 1;
+                        question.Upvoters.Remove(currentUser);
+                    }
+                    else if (!question.Downvoters.Any(v => v.Id == currentUser.Id))
+                    {
+                        question.Votes -= 1;
+                        question.Downvoters.Add(currentUser);
+                    }
+                    else
+                    {
+                        return Redirect($"~/questions/details/{id}");
+                    }
                 }
                 else
                 {
-                    return Redirect($"~/questions/details/{id}");
+                    return Redirect($"~/questions/details/{question.Id}");
                 }
 
                 question.UpdatedAt = DateTime.Now;
