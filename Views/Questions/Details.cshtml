@@ -4,6 +4,24 @@
 
 <h1>@Model.Title</h1>
 
+<div>
+    <span>
+        <form class="d-inline" asp-controller="questions" asp-action="vote" asp-route-id="@Model.Id">
+            <input hidden value="upvote" name="action" />
+            <input class="d-inline" type="submit" value="Upvote" />
+        </form>
+    </span>
+
+    <span>@Model.Votes</span>
+
+    <span>
+        <form class="d-inline" asp-controller="questions" asp-action="vote" asp-route-id="@Model.Id">
+            <input hidden value="downvote" name="action" />
+            <input class="d-inline" type="submit" value="Downvote" />
+        </form>
+    </span>
+</div>
+
 <p>@Html.Raw(Model.Body)</p>
 
 @foreach (Tag tag in Model.Tags)

@@ -131,10 +131,59 @@ namespace stack_overload.Controllers
                 Body = question.Body,
                 Tags = question.Tags,
                 Answers = question.Answers,
-                Comments = question.Comments
+                Comments = question.Comments,
+                Votes = question.Votes
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Vote(
+            [FromRoute] string id, [FromForm] VoteInputModel inputModel
+        ) {
+            Question question = await DbContext
+                                        .Questions
+                                        .Include(q => q.Upvoters)
+                                        .Include(q => q.Downvoters)
+                                        .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (question == null)
+            {
+                return Redirect("~/questions/index");
+            }
+
+            User currentUser = await UserManager.GetUserAsync(User);
+
+            if (question.CreatedById == currentUser.Id)
+            {
+                return Redirect($"~/questions/details/{id}");
+            }
+            else
+            {
+                if (inputModel.Action == "upvote" && (question.Downvoters.Any(v => v.Id == currentUser.Id) || !question.Upvoters.Any(v => v.Id == currentUser.Id)))
+                {
+                    question.Votes += 1;
+                    question.Upvoters.Add(currentUser);
+                    question.Downvoters.Remove(currentUser);
+                }
+                else if (inputModel.Action == "downvote" && (question.Upvoters.Any(v => v.Id == currentUser.Id) || !question.Downvoters.Any(v => v.Id == currentUser.Id)))
+                {
+                    question.Votes -= 1;
+                    question.Downvoters.Add(currentUser);
+                    question.Upvoters.Remove(currentUser);
+                }
+                else
+                {
+                    return Redirect($"~/questions/details/{id}");
+                }
+
+                question.UpdatedAt = DateTime.Now;
+
+                await DbContext.SaveChangesAsync();
+
+                return Redirect($"~/questions/details/{id}");
+            }
         }
     }
 }

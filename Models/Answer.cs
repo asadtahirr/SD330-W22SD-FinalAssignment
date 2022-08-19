@@ -20,6 +20,15 @@ namespace stack_overload.Models
         [InverseProperty("Answer")]
         public virtual List<Comment> Comments { get; set; }
 
+        public int Votes { get; set; }
+        
+        [InverseProperty("UpvotedAnswers")]
+        public List<User> Upvoters { get; set; }
+
+        [InverseProperty("DownvotedAnswers")]
+        public List<User> Downvoters { get; set; }
+
+
         public Answer(string body, string createdById, string questionId)
         {
             Id = Guid.NewGuid().ToString();
@@ -30,6 +39,8 @@ namespace stack_overload.Models
             QuestionId = questionId;
 
             Comments = new List<Comment>();
+            Upvoters = new List<User>();
+            Downvoters = new List<User>();
         }
     }
 }
