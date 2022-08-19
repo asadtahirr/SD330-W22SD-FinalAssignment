@@ -22,36 +22,61 @@ namespace stack_overload.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index([FromQuery] string tag)
-        {
+        public async Task<IActionResult> Index(
+            [FromQuery] string tag, [FromQuery] string page, [FromQuery] string sortByMostAnswered
+        ) {
             List<QuestionSummaryViewModel> questions = null;
+            bool isValidPage = int.TryParse(page, out int pageToVisit);
+            bool sortByDate = sortByMostAnswered?.ToLower() == "false" || string.IsNullOrEmpty(sortByMostAnswered);
+
+            if (!isValidPage)
+            {
+                pageToVisit = 1;
+            }
+
+            int questionsToSkip = PaginationViewModel.QuestionsPerPage * (pageToVisit - 1);
 
             if (string.IsNullOrEmpty(tag))
             {
-                questions = await DbContext.Questions.Select(q => new QuestionSummaryViewModel()
-                {
-                    Id = q.Id,
-                    Title = q.Title,
-                    QuestionCreator = q.CreatedBy.UserName,
-                    AnswersCount = q.Answers.Count(),
-                    Tags = q.Tags.ToList()
-                }).ToListAsync();
+                IOrderedQueryable<Question> query = sortByDate ? DbContext.Questions.OrderByDescending(q => q.CreatedAt) : DbContext.Questions.OrderByDescending(q => q.Answers.Count());
+                
+                questions = await query
+                                    .Skip(questionsToSkip)
+                                    .Take(PaginationViewModel.QuestionsPerPage)
+                                    .Select(q => new QuestionSummaryViewModel()
+                                    {
+                                        Id = q.Id,
+                                        Title = q.Title,
+                                        QuestionCreator = q.CreatedBy.UserName,
+                                        AnswersCount = q.Answers.Count(),
+                                        Tags = q.Tags.ToList()
+                                    })
+                                    .ToListAsync();
             }
             else
             {
-                questions = await DbContext.Questions.Where(q => q.Tags.Any(t => t.Name == tag)).Select(q => new QuestionSummaryViewModel()
-                {
-                    Id = q.Id,
-                    Title = q.Title,
-                    QuestionCreator = q.CreatedBy.UserName,
-                    AnswersCount = q.Answers.Count(),
-                    Tags = q.Tags.ToList()
-                }).ToListAsync();
+                IOrderedQueryable<Question> query = sortByDate ? DbContext.Questions.Where(q => q.Tags.Any(t => t.Name == tag)).OrderByDescending(q => q.CreatedAt) : DbContext.Questions.Where(q => q.Tags.Any(t => t.Name == tag)).OrderByDescending(q => q.Answers.Count());
+
+                questions = await query
+                                .Skip(questionsToSkip)
+                                .Take(PaginationViewModel.QuestionsPerPage)
+                                .Select(q => new QuestionSummaryViewModel()
+                                {
+                                    Id = q.Id,
+                                    Title = q.Title,
+                                    QuestionCreator = q.CreatedBy.UserName,
+                                    AnswersCount = q.Answers.Count(),
+                                    Tags = q.Tags.ToList()
+                                })
+                                .ToListAsync();
             }
 
             QuestionIndexViewModel viewModel = new QuestionIndexViewModel();
 
             viewModel.SummaryOfQuestions = questions;
+            viewModel.CurrentPage = pageToVisit;
+            viewModel.SortedByDate = sortByDate;
+            viewModel.TagForSorting = string.IsNullOrEmpty(tag) ? null : tag;
 
             return View(viewModel);
         }

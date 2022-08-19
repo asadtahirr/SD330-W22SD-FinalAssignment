@@ -1,7 +1,13 @@
 ﻿@using stack_overload.Models.ViewModels
 @model QuestionIndexViewModel
 
+@{
+    string sortText = Model.SortedByDate ? "Sort by most answered" : "Sort by most recent";
+}
+
 <h1>Questions</h1>
+
+<a asp-controller="questions" asp-action="index" asp-route-sortbymostanswered="@Model.SortedByDate">@sortText</a>
 
 @foreach (QuestionSummaryViewModel questionSummary in Model.SummaryOfQuestions) {
     <div>
@@ -33,3 +39,28 @@
         <p>@questionSummary.QuestionCreator</p>
     </div>
 }
+
+<div>
+    @if (Model.CurrentPage > 1)
+    {
+        <span>
+            <a
+                asp-controller="questions"
+                asp-action="index"
+                asp-route-page="@(Model.CurrentPage - 1)"
+                asp-route-tag="@Model.TagForSorting"
+            >Prev</a>
+        </span>
+    }
+    
+    <span>@Model.CurrentPage</span>
+    
+    <span>
+        <a
+            asp-controller="questions"
+            asp-action="index"
+            asp-route-page="@(Model.CurrentPage + 1)"
+            asp-route-tag="@Model.TagForSorting"
+        >Next</a>
+    </span>
+</div>
