@@ -1,0 +1,35 @@
+﻿@using stack_overload.Models.ViewModels
+@model QuestionIndexViewModel
+
+<h1>Questions</h1>
+
+@foreach (QuestionSummaryViewModel questionSummary in Model.SummaryOfQuestions) {
+    <div>
+        <h3>
+            <a
+                asp-controller="questions"
+                asp-action="details"
+                asp-route-id="@questionSummary.Id"
+            >@questionSummary.Title</a>
+        </h3>
+
+        <div>
+            @foreach (Tag tag in questionSummary.Tags)
+            {
+                <span>
+                    <a
+                        asp-controller="questions"
+                        asp-action="index"
+                        asp-route-tag="@tag.Name"
+                    >@tag.Name</a>
+                </span>
+            }
+
+            <span> | </span>
+
+            <span>@questionSummary.AnswersCount answers</span>
+        </div>
+
+        <p>@questionSummary.QuestionCreator</p>
+    </div>
+}

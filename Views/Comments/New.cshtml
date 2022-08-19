@@ -1,0 +1,27 @@
+﻿@using stack_overload.Models.ViewModels
+@model NewCommentViewModel
+
+<div>
+    <h1>Write a comment</h1>
+
+    @if (Model.QuestionId != null)
+    {
+        <form asp-controller="comments" asp-action="new" asp-route-questionId="@Model?.QuestionId" method="post">
+            <div>
+                <input type="text" name="body">
+            </div>
+
+            <button>Submit</button>
+        </form>
+    }
+    else if (Model.AnswerId != null)
+    {
+        <form asp-controller="comments" asp-action="new" asp-route-answerId="@Model?.AnswerId" method="post">
+            <div>
+                <input type="text" name="body">
+            </div>
+
+            <button>Submit</button>
+        </form>
+    }
+</div>

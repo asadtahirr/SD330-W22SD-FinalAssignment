@@ -2,17 +2,41 @@
 @using stack_overload.Models
 @model QuestionDetailsViewModel
 
-<h1>Question: @Model.Title</h1>
+<h1>@Model.Title</h1>
 
 <p>@Model.Body</p>
 
-
-@foreach (Tag tag in Model.Tags) {
-    <span>@tag.Name</span>
+@foreach (Tag tag in Model.Tags)
+{
+    <span>
+        <a
+            asp-controller="questions"
+            asp-action="index"
+            asp-route-tag="@tag.Name"
+        >@tag.Name</a>
+    </span>
 }
 
-<a class="nav-link text-dark" asp-area="" asp-controller="Answers" asp-action="New" asp-route-id="@Model.Id">Answer this question</a>
+@foreach (Comment comment in Model.Comments)
+{
+    <p>@comment.Body - @comment.CreatedBy.UserName</p>
+}
+
+<p>
+    <a asp-controller="comments" asp-action="new" asp-route-questionId="@Model.Id">Write a comment</a>
+</p>
+
+<a class="nav-link text-dark" asp-area="" asp-controller="answers" asp-action="new" asp-route-id="@Model.Id">Answer this question</a>
 
 @foreach (Answer answer in Model.Answers) {
-    <p>@answer.Body</p>
+    <div>
+        <h5>@answer.Body</h5>
+
+        @foreach (Comment comment in answer.Comments)
+        {
+            <p>@comment.Body - @comment.CreatedBy.UserName</p>
+        }
+
+        <p><a asp-controller="comments" asp-action="new" asp-route-answerId="@answer.Id">Write a comment</a></p>
+    </div>
 }

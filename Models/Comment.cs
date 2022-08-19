@@ -22,13 +22,15 @@ namespace stack_overload.Models
         [InverseProperty("Comments")]
         public virtual Answer Answer { get; set; }
 
-        public Comment(string body, string createdById, string questionId)
+        public Comment(string body, string createdById, string questionId, string answerId)
         {
             Id = Guid.NewGuid().ToString();
             Body = body;
             CreatedAt = DateTime.Now;
             CreatedById = createdById;
+
             QuestionId = questionId;
+            AnswerId = answerId;
         }
     }
 }
