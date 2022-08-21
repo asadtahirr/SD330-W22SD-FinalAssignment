@@ -9,6 +9,8 @@ namespace stack_overload.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string CreatedById { get; set; }
+        public bool MarkedAsCorrect { get; set; } = false;
+
         
         [InverseProperty("Answers")]
         public virtual User CreatedBy { get; set; }

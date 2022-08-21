@@ -120,5 +120,48 @@ namespace stack_overload.Controllers
                 return Redirect($"~/questions/details/{answer.QuestionId}");
             }
         }
+
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> MarkAsCorrect(string id)
+        {
+            Answer answer = await DbContext
+                                    .Answers
+                                    .Include(a => a.Question)
+                                    .ThenInclude(q => q.Answers)
+                                    .FirstOrDefaultAsync(a => a.Id == id);
+
+            if(answer == null)
+            {
+                return Redirect("~/questions/index");
+            }
+
+            User currentUser = await UserManager.GetUserAsync(User);
+
+            if (answer.Question.CreatedById != currentUser.Id)
+            {
+                return Redirect($"~/questions/details/{answer.QuestionId}");
+            }
+
+            Question question = answer.Question;
+
+            bool isAnotherQuestionMarkedAsCorrect = question.Answers.Any(a => a.MarkedAsCorrect == true);
+
+            if (isAnotherQuestionMarkedAsCorrect)
+            {
+                List<Answer> alreadyMarkedAnswers = question.Answers.Where(a => a.MarkedAsCorrect == true).ToList();
+
+                foreach (Answer markedAnswer in alreadyMarkedAnswers)
+                {
+                    markedAnswer.MarkedAsCorrect = false;
+                }
+            }
+
+            answer.MarkedAsCorrect = true;
+
+            await DbContext.SaveChangesAsync();
+
+            return Redirect($"~/questions/details/{answer.QuestionId}");
+        }
     }
 }

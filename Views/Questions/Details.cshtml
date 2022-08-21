@@ -2,6 +2,18 @@
 @using stack_overload.Models
 @model QuestionDetailsViewModel
 
+@{
+    List<Answer> sortedAnswers = Model.Answers.ToList();
+
+    int correctAnswerIndex = Model.Answers.FindIndex(a => a.MarkedAsCorrect);
+
+    Answer correctAnswer = Model.Answers[correctAnswerIndex];
+
+    sortedAnswers.RemoveAt(correctAnswerIndex);
+
+    sortedAnswers.Insert(0, correctAnswer);
+}
+
 <h1>@Model.Title</h1>
 <p>Asked by @Model.QuestionCreatorName (@Model.QuestionCreatorReputation reputation)</p>
 
@@ -47,11 +59,26 @@
 
 <a class="nav-link text-dark" asp-area="" asp-controller="answers" asp-action="new" asp-route-id="@Model.Id">Answer this question</a>
 
-@foreach (Answer answer in Model.Answers) {
+@foreach (Answer answer in sortedAnswers) {
     <div>
+
         <h5>@answer.Body</h5>
         
+        @if (@answer.MarkedAsCorrect)
+        {
+            <p>Marked as correct</p>
+        }
+
         <p>Answered by @answer.CreatedBy.UserName (@answer.CreatedBy.Reputation reputation)</p>
+
+        <div>
+            @if (answer.MarkedAsCorrect == false && Model.QuestionCreatorId == Model.CurrentUserId)
+            {
+                <form class="d-inline" asp-controller="answers" asp-action="markascorrect" asp-route-id="@answer.Id">
+                    <input class="d-inline" type="submit" value="Mark as correct" />
+                </form>
+            }
+        </div>
 
         @foreach (Comment comment in answer.Comments)
         {

@@ -125,11 +125,15 @@ namespace stack_overload.Controllers
             if (question == null)
                 return Redirect("/questions/new");
 
+            User currentUser = User.Identity.IsAuthenticated ? await UserManager.GetUserAsync(User) : null;
+
             QuestionDetailsViewModel viewModel = new QuestionDetailsViewModel()
             {
                 Id = question.Id,
                 Title = question.Title,
                 Body = question.Body,
+                CurrentUserId = currentUser?.Id,
+                QuestionCreatorId = question.CreatedById,
                 QuestionCreatorName = question.CreatedBy.UserName,
                 QuestionCreatorReputation = question.CreatedBy.Reputation,
                 Tags = question.Tags,
