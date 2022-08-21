@@ -25,6 +25,7 @@ namespace stack_overload.Models
 
         [InverseProperty("Downvoters")]
         public virtual List<Answer> DownvotedAnswers { get; set; }
+        public int Reputation { get; set; } = 0;
 
         public User()
         {

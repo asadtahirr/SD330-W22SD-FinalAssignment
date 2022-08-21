@@ -52,6 +52,7 @@ namespace stack_overload.Controllers
         {
             Answer answer = await DbContext
                                         .Answers
+                                        .Include(q => q.CreatedBy)
                                         .Include(a => a.Upvoters)
                                         .Include(a => a.Downvoters)
                                         .FirstOrDefaultAsync(a => a.Id == id);
@@ -74,11 +75,13 @@ namespace stack_overload.Controllers
                     if (answer.Downvoters.Any(v => v.Id == currentUser.Id))
                     {
                         answer.Votes += 1;
+                        answer.CreatedBy.Reputation += 5;
                         answer.Downvoters.Remove(currentUser);
                     }
                     else if (!answer.Upvoters.Any(v => v.Id == currentUser.Id))
                     {
                         answer.Votes += 1;
+                        answer.CreatedBy.Reputation += 5;
                         answer.Upvoters.Add(currentUser);
                     }
                     else
@@ -91,11 +94,13 @@ namespace stack_overload.Controllers
                     if (answer.Upvoters.Any(v => v.Id == currentUser.Id))
                     {
                         answer.Votes -= 1;
+                        answer.CreatedBy.Reputation -= 5;
                         answer.Upvoters.Remove(currentUser);
                     }
                     else if (!answer.Downvoters.Any(v => v.Id == currentUser.Id))
                     {
                         answer.Votes -= 1;
+                        answer.CreatedBy.Reputation -= 5;
                         answer.Downvoters.Add(currentUser);
                     }
                     else

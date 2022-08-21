@@ -116,6 +116,7 @@ namespace stack_overload.Controllers
             Question question = await DbContext.Questions
                                                     .Include(q => q.Tags)
                                                     .Include(q => q.Answers)
+                                                    .ThenInclude(a => a.CreatedBy)
                                                     .ThenInclude(a => a.Comments)
                                                     .Include(q => q.Comments)
                                                     .Include(q => q.CreatedBy)
@@ -129,6 +130,8 @@ namespace stack_overload.Controllers
                 Id = question.Id,
                 Title = question.Title,
                 Body = question.Body,
+                QuestionCreatorName = question.CreatedBy.UserName,
+                QuestionCreatorReputation = question.CreatedBy.Reputation,
                 Tags = question.Tags,
                 Answers = question.Answers,
                 Comments = question.Comments,
@@ -144,6 +147,7 @@ namespace stack_overload.Controllers
         ) {
             Question question = await DbContext
                                         .Questions
+                                        .Include(q => q.CreatedBy)
                                         .Include(q => q.Upvoters)
                                         .Include(q => q.Downvoters)
                                         .FirstOrDefaultAsync(q => q.Id == id);
@@ -166,11 +170,13 @@ namespace stack_overload.Controllers
                     if (question.Downvoters.Any(v => v.Id == currentUser.Id))
                     {
                         question.Votes += 1;
+                        question.CreatedBy.Reputation += 5;
                         question.Downvoters.Remove(currentUser);
                     }
                     else if (!question.Upvoters.Any(v => v.Id == currentUser.Id))
                     {
                         question.Votes += 1;
+                        question.CreatedBy.Reputation += 5;
                         question.Upvoters.Add(currentUser);
                     }
                     else
@@ -180,14 +186,18 @@ namespace stack_overload.Controllers
                 }
                 else if (inputModel.Action == "downvote")
                 {
+                    
+
                     if (question.Upvoters.Any(v => v.Id == currentUser.Id))
                     {
                         question.Votes -= 1;
+                        question.CreatedBy.Reputation -= 5;
                         question.Upvoters.Remove(currentUser);
                     }
                     else if (!question.Downvoters.Any(v => v.Id == currentUser.Id))
                     {
                         question.Votes -= 1;
+                        question.CreatedBy.Reputation -= 5;
                         question.Downvoters.Add(currentUser);
                     }
                     else
@@ -199,6 +209,8 @@ namespace stack_overload.Controllers
                 {
                     return Redirect($"~/questions/details/{question.Id}");
                 }
+
+                
 
                 question.UpdatedAt = DateTime.Now;
 

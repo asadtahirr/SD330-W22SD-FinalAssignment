@@ -3,6 +3,7 @@
 @model QuestionDetailsViewModel
 
 <h1>@Model.Title</h1>
+<p>Asked by @Model.QuestionCreatorName (@Model.QuestionCreatorReputation reputation)</p>
 
 <div>
     <span>
@@ -49,6 +50,8 @@
 @foreach (Answer answer in Model.Answers) {
     <div>
         <h5>@answer.Body</h5>
+        
+        <p>Answered by @answer.CreatedBy.UserName (@answer.CreatedBy.Reputation reputation)</p>
 
         @foreach (Comment comment in answer.Comments)
         {
