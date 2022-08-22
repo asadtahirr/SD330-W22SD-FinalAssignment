@@ -61,8 +61,9 @@
     <a asp-controller="comments" asp-action="new" asp-route-questionId="@Model.Id">Write a comment</a>
 </p>
 
-<a class="nav-link text-dark" asp-area="" asp-controller="answers" asp-action="new" asp-route-id="@Model.Id">Answer this question</a>
-
+<p>
+<a  asp-area="" asp-controller="answers" asp-action="new" asp-route-id="@Model.Id">Answer this question</a>
+</p>
 @foreach (Answer answer in sortedAnswers) {
     <div>
 
