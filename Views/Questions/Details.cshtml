@@ -7,11 +7,15 @@
 
     int correctAnswerIndex = Model.Answers.FindIndex(a => a.MarkedAsCorrect);
 
-    Answer correctAnswer = Model.Answers[correctAnswerIndex];
 
-    sortedAnswers.RemoveAt(correctAnswerIndex);
+    if (correctAnswerIndex > 0)
+    {
+        Answer correctAnswer = Model.Answers[correctAnswerIndex];
+    
+        sortedAnswers.RemoveAt(correctAnswerIndex);
 
-    sortedAnswers.Insert(0, correctAnswer);
+        sortedAnswers.Insert(0, correctAnswer);
+    }
 }
 
 <h1>@Model.Title</h1>

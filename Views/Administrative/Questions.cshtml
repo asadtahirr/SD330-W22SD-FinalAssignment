@@ -1,0 +1,40 @@
+﻿@using stack_overload.Models.ViewModels
+@model AdministrationQuestionsViewModel
+
+@foreach (AdministrationQuestionViewModel question in Model.Questions)
+{
+    <div>
+        <h3>
+            <a
+                asp-controller="questions"
+                asp-action="details"
+                asp-route-id="@question.Id"
+            >@question.Title</a>
+        </h3>
+
+        <div>
+            @foreach (Tag tag in question.Tags)
+            {
+                <span>
+                    <a
+                        asp-controller="questions"
+                        asp-action="index"
+                        asp-route-tag="@tag.Name"
+                    >@tag.Name</a>
+                </span>
+            }
+
+            <span> | </span>
+
+            <span>@question.AnswersCount answers</span>
+        </div>
+
+        <p>@question.CreatedByName</p>
+
+        <div class="mb-2">
+            <form class="d-inline mb-2" asp-controller="administrative" asp-action="deletequestion" asp-route-id="@question.Id">
+                <input class="d-inline text-danger" type="submit" value="Delete" />
+            </form>
+        </div>
+    </div>
+}

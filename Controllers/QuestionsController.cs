@@ -214,8 +214,6 @@ namespace stack_overload.Controllers
                     return Redirect($"~/questions/details/{question.Id}");
                 }
 
-                
-
                 question.UpdatedAt = DateTime.Now;
 
                 await DbContext.SaveChangesAsync();
